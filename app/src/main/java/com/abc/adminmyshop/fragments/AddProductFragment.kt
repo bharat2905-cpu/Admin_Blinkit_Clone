@@ -1,26 +1,34 @@
 package com.abc.adminmyshop.fragments
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.abc.adminmyshop.Constants
 import com.abc.adminmyshop.R
 import com.abc.adminmyshop.Utils
+import com.abc.adminmyshop.activity.AdminMainActivity
 import com.abc.adminmyshop.adapter.AdapterSelectedImage
 import com.abc.adminmyshop.databinding.FragmentAddProductBinding
 import com.abc.adminmyshop.models.Product
+import com.abc.adminmyshop.viewModels.AdminViewModel
+import kotlinx.coroutines.launch
 
 class AddProductFragment : Fragment() {
 
+    private val viewModel : AdminViewModel<Any> by viewModels()
     private lateinit var binding : FragmentAddProductBinding
     private val imageUris : ArrayList<Uri> = arrayListOf()
+
     val selectedImage = registerForActivityResult(ActivityResultContracts.GetMultipleContents()){listOfUri ->
         val fiveImages = listOfUri.take(5)
         imageUris.clear()
@@ -46,13 +54,14 @@ class AddProductFragment : Fragment() {
     private fun onAddButtonClicked() {
         binding.btnAddProduct.setOnClickListener {
             Utils.showDialog(requireContext(), "Uploading images...")
-            val productTitle = binding.etProductTitle.text.toString()
-            val productQuantity = binding.etProductQuantity.text.toString()
-            val productUnit = binding.etProductUnit.text.toString()
-            val productPrice = binding.etProductPrice.text.toString()
-            val productStock = binding.etProductStock.text.toString()
-            val productCategory = binding.etProductCategory.text.toString()
-            val productType = binding.etProductType.text.toString()
+
+            val productTitle = binding.etProductTitle.text.toString().trim()
+            val productQuantity = binding.etProductQuantity.text.toString().trim()
+            val productUnit = binding.etProductUnit.text.toString().trim()
+            val productPrice = binding.etProductPrice.text.toString().trim()
+            val productStock = binding.etProductStock.text.toString().trim()
+            val productCategory = binding.etProductCategory.text.toString().trim()
+            val productType = binding.etProductType.text.toString().trim()
 
             if (productTitle.isEmpty() || productQuantity.isEmpty() || productUnit.isEmpty() || productPrice.isEmpty() ||
                 productStock.isEmpty() || productCategory.isEmpty() || productType.isEmpty()){
@@ -60,13 +69,25 @@ class AddProductFragment : Fragment() {
                     hideDialog()
                     showToast(requireContext(), "Empty fields are not allowed")
                 }
+                return@setOnClickListener
             }
+
+            else if (productPrice.toIntOrNull() == null || productQuantity.toIntOrNull() == null || productStock.toIntOrNull() == null) {
+                Utils.apply {
+                    hideDialog()
+                    showToast(requireContext(), "Please enter valid numbers for price, quantity, and stock")
+                }
+                return@setOnClickListener
+            }
+
             else if (imageUris.isEmpty()){
                 Utils.apply {
                     hideDialog()
                     showToast(requireContext(), "Please upload some images")
                 }
+                return@setOnClickListener
             }
+
             else{
                 val product = Product(
                     productTitle = productTitle,
@@ -77,7 +98,8 @@ class AddProductFragment : Fragment() {
                     productCategory = productCategory,
                     productType = productType,
                     itemCount = 0,
-                    adminUid = Utils.getCurrentUserId()
+                    adminUid = Utils.getCurrentUserId(),
+                    productRandomId = Utils.getRandomId()
                 )
                 saveImage(product)
             }
@@ -85,8 +107,43 @@ class AddProductFragment : Fragment() {
     }
 
     private fun saveImage(product: Product) {
-
+        viewModel.saveImageInDB(imageUris)
+        lifecycleScope.launch {
+            viewModel.isImagesUploaded.collect{
+                if (it){
+                    Utils.apply {
+                        hideDialog()
+                        showToast(requireContext(), "image saved")
+                    }
+                    getUrls(product)
+                }
+            }
+        }
     }
+
+    private fun getUrls(product: Product) {
+        Utils.showDialog(requireContext(), "Publishing Product...")
+
+        lifecycleScope.launch {
+            viewModel.downloadedUrls.collect{
+                val urls = it
+                product.productImageUris = urls
+                saveProduct(product)
+            }
+        }
+    }
+
+    private suspend fun saveProduct(product: Product) {
+        viewModel.saveProduct(product)
+        viewModel.isProductSaved.collect{
+            if (it){
+                Utils.hideDialog()
+                startActivity(Intent(requireActivity(), AdminMainActivity::class.java))
+                Utils.showToast(requireContext(), "Your product is live")
+            }
+        }
+    }
+
 
     private fun onImageSelectClicked() {
         binding.btnSelectImage.setOnClickListener{

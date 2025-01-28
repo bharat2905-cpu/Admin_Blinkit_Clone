@@ -3,7 +3,7 @@ package com.abc.adminmyshop.models
 import java.util.UUID
 
 data class Product(
-    val productRandomId : String = UUID.randomUUID().toString(),
+    val productRandomId : String? = null,
     val productTitle : String ? = null,
     val productQuantity : Int ? = null,
     val productUnit : String ? = null,
@@ -13,5 +13,5 @@ data class Product(
     val productType : String ? = null,
     val itemCount : Int ? = null,
     val adminUid : String ? = null,
-    val productImageUris : ArrayList<String?> ? = null,
+    var productImageUris : ArrayList<String?> ? = null,
 )

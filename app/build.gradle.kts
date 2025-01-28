@@ -47,6 +47,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0")
+    implementation("androidx.room:room-ktx:2.6.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
@@ -65,13 +66,15 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
 
     // Import the Firebase BoM
-    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
+//    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
+//    implementation("com.google.firebase:firebase-analytics")
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-analytics")
 
     implementation ("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.android.gms:play-services-auth-api-phone:18.0.1")
     implementation ("com.google.android.gms:play-services-auth:20.7.0")
-//    implementation("com.google.firebase:firebase-storage-ktx")
+    implementation("com.google.firebase:firebase-storage-ktx")
     implementation("com.google.firebase:firebase-database-ktx")
     implementation("com.google.firebase:firebase-messaging-ktx:23.4.0")
 

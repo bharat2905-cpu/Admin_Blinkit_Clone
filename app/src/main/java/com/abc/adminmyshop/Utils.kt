@@ -38,4 +38,7 @@ object Utils {
         return FirebaseAuth.getInstance().currentUser!!.uid
     }
 
+    fun getRandomId() : String{
+        return (1 .. 25).map { (('A'..'Z') + ('a'..'z') + ('0'..'9')).random() }.joinToString("")
+    }
 }
