@@ -133,13 +133,15 @@ class AddProductFragment : Fragment() {
         }
     }
 
-    private suspend fun saveProduct(product: Product) {
+    private fun saveProduct(product: Product) {
         viewModel.saveProduct(product)
-        viewModel.isProductSaved.collect{
-            if (it){
-                Utils.hideDialog()
-                startActivity(Intent(requireActivity(), AdminMainActivity::class.java))
-                Utils.showToast(requireContext(), "Your product is live")
+        lifecycleScope.launch {
+            viewModel.isProductSaved.collect{
+                if (it){
+                    Utils.hideDialog()
+                    startActivity(Intent(requireActivity(), AdminMainActivity::class.java))
+                    Utils.showToast(requireContext(), "Your product is live")
+                }
             }
         }
     }

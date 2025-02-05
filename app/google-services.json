@@ -1,14 +1,13 @@
 {
   "project_info": {
-    "project_number": "1055178951746",
-    "firebase_url": "https://bamboo-diode-414911-default-rtdb.firebaseio.com",
-    "project_id": "bamboo-diode-414911",
-    "storage_bucket": "bamboo-diode-414911.appspot.com"
+    "project_number": "537483943879",
+    "project_id": "ok-thik-hai-chalega-358c8",
+    "storage_bucket": "ok-thik-hai-chalega-358c8.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1055178951746:android:8175dc5412f8f8a226b1db",
+        "mobilesdk_app_id": "1:537483943879:android:b788a9b6a38681dcf383e2",
         "android_client_info": {
           "package_name": "com.abc.adminmyshop"
         }
@@ -16,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAxDRjiAJV31BL5Mnu4pOwq7VOv4jmDP0I"
+          "current_key": "AIzaSyC8QcBTLLT-a7hVK0nnKEClHqCCK8GN01U"
         }
       ],
       "services": {
