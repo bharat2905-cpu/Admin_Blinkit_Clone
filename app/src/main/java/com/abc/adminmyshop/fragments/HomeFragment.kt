@@ -38,11 +38,26 @@ class HomeFragment : Fragment() {
     }
 
     private fun getAlltheProducts(category: String) {
+        binding.shimmerViewContainer.visibility = View.VISIBLE
+
         lifecycleScope.launch {
             viewModel.fetchAllTheProducts(category).collect{
+
+                if(it.isEmpty()){
+                    binding.rvProducts.visibility = View.GONE
+                    binding.tvText.visibility = View.VISIBLE
+                }
+                else{
+                    binding.rvProducts.visibility = View.VISIBLE
+                    binding.tvText.visibility = View.GONE
+                }
+
                 val adapterProduct = AdapterProduct()
                 binding.rvProducts.adapter = adapterProduct
                 adapterProduct.differ.submitList(it)
+
+                binding.shimmerViewContainer.visibility = View.GONE
+
             }
         }
     }
