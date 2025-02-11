@@ -3,6 +3,7 @@ package com.abc.adminmyshop.viewModels
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import com.abc.adminmyshop.Utils
+import com.abc.adminmyshop.models.Product
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -50,13 +51,15 @@ class AdminViewModel< Product : Any> : ViewModel() {
     }
 
     fun saveProduct(product: com.abc.adminmyshop.models.Product) {
-        val productRandomId = product.productRandomId
+//        val productRandomId = product.productRandomId
 
-        FirebaseDatabase.getInstance().getReference("Admins").child("AllProducts/$productRandomId").setValue(product)
+        FirebaseDatabase.getInstance().getReference("Admins").child("AllProducts/${product.productRandomId}").setValue(product)
             .addOnSuccessListener {
-                FirebaseDatabase.getInstance().getReference("Admins").child("ProductCategory/$productRandomId").setValue(product)
+                FirebaseDatabase.getInstance().getReference("Admins")
+                     .child("ProductCategory/${product.productCategory}/${product.productRandomId}").setValue(product)
                     .addOnSuccessListener {
-                        FirebaseDatabase.getInstance().getReference("Admins").child("ProductType/$productRandomId").setValue(product)
+                        FirebaseDatabase.getInstance().getReference("Admins")
+                            .child("ProductType/${product.productType}/${product.productRandomId}").setValue(product)
                             .addOnSuccessListener {
                                 _isProductSaved.value = true
                             }
@@ -88,7 +91,15 @@ class AdminViewModel< Product : Any> : ViewModel() {
 
         db.addValueEventListener(eventListener)
 
-        awaitClose{db.removeEventListener(eventListener)}
+        awaitClose{db.removeEventListener(eventListener)
+        }
+    }
+
+    fun savingUpdateProducts(product: com.abc.adminmyshop.models.Product){
+        FirebaseDatabase.getInstance().getReference("Admins").child("AllProducts/${product.productRandomId}").setValue(product)
+        FirebaseDatabase.getInstance().getReference("Admins").child("ProductCategory/${product.productCategory}/${product.productRandomId}").setValue(product)
+        FirebaseDatabase.getInstance().getReference("Admins").child("ProductType/${product.productType}/${product.productRandomId}").setValue(product)
+
     }
 
 }
